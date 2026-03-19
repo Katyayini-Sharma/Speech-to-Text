@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .section {
+            margin: 20px 0;
+        }
+
+        .text-box {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timestamps {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timestamp-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .time {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 20px 10px 0;
+            text-decoration: none;
+            background: #667eea;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        input {
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Transcription Result</h1>
+
+    <div class="section">
+        <h3>Text</h3>
+        <div class="text-box">
+            {{ result.text }}
+        </div>
+    </div>
+
+    <div class="section">
+        <h4>Language</h4>
+        <p>{{ language }}</p>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="section">
+        <h4>Search Transcript</h4>
+        <input type="text" id="searchBox" placeholder="Search..." onkeyup="searchText()">
+    </div>
+
+    <div class="section">
+        <h4>Timestamps</h4>
+        <div class="timestamps" id="transcript">
+            {% for seg in result.segments %}
+                <div class="timestamp-item">
+                    <span class="time">
+                        [{{ "%.2f"|format(seg.start) }}s - {{ "%.2f"|format(seg.end) }}s]
+                    </span>
+                    — {{ seg.text }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="center">
+
+        <!-- TXT -->
+        <form action="/download" method="post" style="display:inline;">
+            <input type="hidden" name="text" value="{{ result.text }}">
+            <input type="hidden" name="timestamps" value="{% for seg in result.segments %}[{{ "%.2f"|format(seg.start) }}s - {{ "%.2f"|format(seg.end) }}s] {{ seg.text }}&#10;{% endfor %}">
+            <button type="submit" class="btn">Download TXT</button>
+        </form>
+
+        <!-- PDF -->
+        <form action="/download_pdf" method="post" style="display:inline;">
+            <input type="hidden" name="text" value="{{ result.text }}">
+            <input type="hidden" name="timestamps" value="{% for seg in result.segments %}[{{ "%.2f"|format(seg.start) }}s - {{ "%.2f"|format(seg.end) }}s] {{ seg.text }}&#10;{% endfor %}">
+            <button type="submit" class="btn">Download PDF</button>
+        </form>
+
+        <!-- BACK -->
+        <a href="/" class="btn">← Go Back</a>
+
+    </div>
+
+</div>
+
+<script>
+function searchText() {
+    let input = document.getElementById("searchBox").value.toLowerCase();
+    let items = document.getElementsByClassName("timestamp-item");
+
+    for (let i = 0; i < items.length; i++) {
+        let text = items[i].innerText.toLowerCase();
+        items[i].style.display = text.includes(input) ? "" : "none";
+    }
+}
+</script>
+
+</body>
+</html>
