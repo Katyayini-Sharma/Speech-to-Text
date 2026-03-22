@@ -96,6 +96,15 @@
         <p>{{ language }}</p>
     </div>
 
+    <div class="section">
+        <h3>Keywords</h3>
+        <div class="text-box">
+            {% for word in keywords %}
+                <span style="margin-right:10px;">{{ word }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
     <!-- SEARCH -->
     <div class="section">
         <h4>Search Transcript</h4>

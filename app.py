@@ -3,6 +3,7 @@ import os
 import io
 from transcribe import transcribe_audio
 from record import record_audio
+from nlp_utils import extract_keywords
 
 # PDF
 from reportlab.platypus import SimpleDocTemplate, Paragraph
@@ -41,8 +42,10 @@ def upload():
 
     result = transcribe_audio(filepath)
 
+    keywords = extract_keywords(result["text"])
+
     language = get_full_language_name(result["language"])
-    return render_template("result.html", result=result, language=language)
+    return render_template("result.html", result=result, language=language, keywords=keywords)
 
 
 @app.route("/record", methods=["POST"])
@@ -51,8 +54,10 @@ def record():
 
     result = transcribe_audio(filepath)
 
+    keywords = extract_keywords(result["text"])
+
     language = get_full_language_name(result["language"])
-    return render_template("result.html", result=result, language=language)
+    return render_template("result.html", result=result, language=language, keywords=keywords)
 
 
 # TXT download
